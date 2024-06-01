@@ -1,0 +1,88 @@
+import mysql.connector
+    def add_to_waiting_list(self, passenger, position, status):
+        self.book_ticket(passenger, position, status)
+
+    def cancel_ticket(self, passenger_id):
+        self.cursor.execute('DELETE FROM passengers WHERE id = %s', (passenger_id,))
+        self.conn.commit()
+        print(f"Ticket cancelled for Passenger ID {passenger_id}")
+
+    def print_available(self):
+        print("Available Lower Berths:", self.available_lower_berths)
+        print("Available Middle Berths:", self.available_middle_berths)
+        print("Available Upper Berths:", self.available_upper_berths)
+        print("Available RAC Tickets:", self.available_rac_tickets)
+        print("Available Waiting List:", self.available_waiting_list)
+
+    def print_passengers(self):
+        self.cursor.execute('SELECT * FROM passengers')
+        rows = self.cursor.fetchall()
+        for row in rows:
+            print(row)
+
+def book_ticket(passenger):
+    if (passenger.berth_preference == "L" and TicketBooker.available_lower_berths > 0):
+        print("Preferred Berth Available")
+        booker.book_ticket(passenger, TicketBooker.lower_berths_positions.pop(0), "L")
+        TicketBooker.available_lower_berths -= 1
+
+    elif (passenger.berth_preference == "M" and TicketBooker.available_middle_berths > 0):
+        print("Preferred Berth Available")
+        booker.book_ticket(passenger, TicketBooker.middle_berths_positions.pop(0), "M")
+        TicketBooker.available_middle_berths -= 1
+
+    elif (passenger.berth_preference == "U" and TicketBooker.available_upper_berths > 0):
+        print("Preferred Berth Available")
+        booker.book_ticket(passenger, TicketBooker.upper_berths_positions.pop(0), "U")
+        TicketBooker.available_upper_berths -= 1
+
+    elif TicketBooker.available_lower_berths > 0:
+        print("Lower Berth Given")
+        booker.book_ticket(passenger, TicketBooker.lower_berths_positions.pop(0), "L")
+        TicketBooker.available_lower_berths -= 1
+
+    elif TicketBooker.available_middle_berths > 0:
+        print("Middle Berth Given")
+        booker.book_ticket(passenger, TicketBooker.middle_berths_positions.pop(0), "M")
+        TicketBooker.available_middle_berths -= 1
+
+    elif TicketBooker.available_upper_berths > 0:
+        print("Upper Berth Given")
+        booker.book_ticket(passenger, TicketBooker.upper_berths_positions.pop(0), "U")
+        TicketBooker.available_upper_berths -= 1
+
+    elif TicketBooker.available_rac_tickets > 0:
+        print("RAC Available")
+        booker.add_to_rac(passenger, TicketBooker.rac_positions.pop(0), "RAC")
+
+    elif TicketBooker.available_waiting_list > 0:
+        print("Added to Waiting List")
+        booker.add_to_waiting_list(passenger, TicketBooker.waiting_list_positions.pop(0), "WL")
+
+def main():
+    global booker
+    booker = TicketBooker()
+    while True:
+        print("1. Book Ticket\n2. Cancel Ticket\n3. Available Tickets\n4. Booked Tickets\n5. Exit")
+        choice = int(input("Enter your choice: "))
+        if choice == 1:
+            name = input("Enter your name: ")
+            age = int(input("Enter your age: "))
+            berth_preference = input("Enter berth preference (L for Lower, M for Middle, U for Upper): ")
+            passenger = Passenger(name, age, berth_preference)
+            book_ticket(passenger)
+        elif choice == 2:
+            passenger_id = int(input("Enter passenger ID to cancel: "))
+            booker.cancel_ticket(passenger_id)
+        elif choice == 3:
+            booker.print_available()
+        elif choice == 4:
+            booker.print_passengers()
+        elif choice == 5:
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if _name_ == "_main_":
+    main()
